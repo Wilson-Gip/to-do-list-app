@@ -1,30 +1,27 @@
 //ES6 and object destructuring are important to know
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles.css";
+import { NewTodoForm } from "./NewTodoForm";
+import { TodoList } from "./TodoList";
 
 export default function App(){
   //useState for functionality 
   //state variables always rerenders the return
   //it runs whatever state the variables are in and it always rerenders when changes happen
   //useState whenever a change is going to happen such as onsubmit and input
-  const [newItem, setNewItem] = useState("");
   const [todos, setTodos] = useState([])
 
-  function handleSubmit(e) {
-    //prevents refreshing
-    e.preventDefault()
 
+  function addTodo(title){
     //in order to modify existing data you need to pass a function and a variable in it
     //pass a function whenever you need to use current values otherwise just set it using states
     setTodos((currentTodos) => {
       return [
         ...currentTodos,
-        {id: crypto.randomUUID(), title: newItem, completed:
+        {id: crypto.randomUUID(), title, completed:
         false },
       ]
     })
-
-    setNewItem("");
   }
 
   function toggleTodo(id, completed) {
@@ -46,47 +43,15 @@ export default function App(){
   }
   return (
     <>
-      <form onSubmit={handleSubmit} className="new-item-form">
-        <div className="form-row">
-          {/* to link label and input use htmlfor for jsx while for is used in regular javascript*/}
-          <label htmlFor="item">New Item</label>
-          {/* pass the state value here when input happens to update item */}
-          {/* use onchange and setnewvalue event listner */}
-          <input 
-            value={newItem} 
-            onChange={e => 
-            setNewItem(e.target.value)} 
-            type="text" 
-            id="item" 
-          />
-        </div>
-        <button className="btn">Add</button>
-      </form>
+      {/* props on jsx components let you pass functions */}
+      {/* make sure name matches when passing props aka the onsubmit part */}
+      <NewTodoForm onSubmit={addTodo}/>
       <h1 className="header">To-do List</h1>
-      <ul className="list">
-        {/* use a map so that we don't have to hard code our list items */}
-        {/* curly brackets is javascript code */}
-        {/* maps need a key because it needs to know which specific item to modify */}
-        {/* short circuiting */}
-        {todos.length === 0 && "Nothing Today!"}
-        {todos.map(todo => {
-          return  (
-            <li key={todo.id}>
-              <label>
-                <input type="checkbox" checked={todo.completed}
-                onChange={e => toggleTodo(todo.id,e.target.checked)}/>
-                {todo.title}
-              </label>
-              {/* call functions like this {() =>} */}
-              <button onClick={() => deleteTodo(todo.id)}
-              className="btn btn-danger"
-              >
-                Delete
-              </button>
-            </li>
-          )
-        })}
-      </ul>
+      <TodoList 
+        todos={todos} 
+        toggleTodo={toggleTodo} 
+        deleteTodo={deleteTodo} 
+      />
     </>
   )
 }
