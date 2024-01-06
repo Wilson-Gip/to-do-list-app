@@ -1,3 +1,4 @@
+//ES6 and object destructuring are important to know
 import { useState } from "react";
 import "./styles.css";
 
@@ -14,12 +15,33 @@ export default function App(){
     e.preventDefault()
 
     //in order to modify existing data you need to pass a function and a variable in it
+    //pass a function whenever you need to use current values otherwise just set it using states
     setTodos((currentTodos) => {
       return [
         ...currentTodos,
         {id: crypto.randomUUID(), title: newItem, completed:
         false },
       ]
+    })
+
+    setNewItem("");
+  }
+
+  function toggleTodo(id, completed) {
+    setTodos(currentTodos => {
+      return currentTodos.map(todo => {
+        if(todo.id === id){
+          return {...todo, completed }
+        }
+
+        return todo;
+      })
+    })
+  }
+
+  function deleteTodo(id) {
+    setTodos(currentTodos => {
+      return currentTodos.filter(todo => todo.id !== id)
     })
   }
   return (
@@ -42,20 +64,28 @@ export default function App(){
       </form>
       <h1 className="header">To-do List</h1>
       <ul className="list">
-        <li>
-          <label>
-            <input type="checkbox" />
-            Item 1
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
-        <li>
-          <label>
-            <input type="checkbox" />
-            Item 2
-          </label>
-          <button className="btn btn-danger">Delete</button>
-        </li>
+        {/* use a map so that we don't have to hard code our list items */}
+        {/* curly brackets is javascript code */}
+        {/* maps need a key because it needs to know which specific item to modify */}
+        {/* short circuiting */}
+        {todos.length === 0 && "Nothing Today!"}
+        {todos.map(todo => {
+          return  (
+            <li key={todo.id}>
+              <label>
+                <input type="checkbox" checked={todo.completed}
+                onChange={e => toggleTodo(todo.id,e.target.checked)}/>
+                {todo.title}
+              </label>
+              {/* call functions like this {() =>} */}
+              <button onClick={() => deleteTodo(todo.id)}
+              className="btn btn-danger"
+              >
+                Delete
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </>
   )
